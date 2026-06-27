@@ -1,0 +1,47 @@
+# spring context variables
+server:
+  port: ${APP_TEST_PORT:8888}
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  application:
+    name: jwt-app
+  main:
+    banner-mode: off
+  #spring database
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+  jpa:
+    properties:
+      hibernate:
+    defer-datasource-initialization: true
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    edu.awieclawski.app: DEBUG
+#application variables
+application:
+  timezone: ${APP_TIME_ZONE:GMT+2:00}
+jwt:
+  secret: ${JWT_SECRET_KEY:defaultJwtSecretKey}
+  validity: ${JWT_VALIDITY_MINUTES:2}
+  refresh: ${JWT_REFRESH_MINUTES:2}
+  api:
+    open:
+      hello: /hello
+      login: /api/authenticate
+      register: /api/register
+    safe:
+      user: /api/safe/user
+      admin: /api/safe/admin
+      refresh-token: /api/safe/refreshtoken
+      errors: /api/safe/errors
