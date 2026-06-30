@@ -1,8 +1,8 @@
 package edu.awieclawski.app.exception;
 
-import edu.awieclawski.app.exception.base.BaseRestApiException;
+import edu.awieclawski.app.exception.base.AuthorisedException;
 
-public class EntityNotFoundException extends BaseRestApiException {
+public class EntityNotFoundException extends AuthorisedException {
 
     public EntityNotFoundException(String message) {
         super(message);

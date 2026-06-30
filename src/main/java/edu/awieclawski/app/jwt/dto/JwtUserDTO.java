@@ -15,5 +15,6 @@ public class JwtUserDTO {
     @Setter
     private String password;
     private String email;
-    private String role;
+    @Setter
+    private Integer roleId;
 }

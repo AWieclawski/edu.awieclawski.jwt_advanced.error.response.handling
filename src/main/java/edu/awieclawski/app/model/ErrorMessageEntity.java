@@ -11,7 +11,6 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor (access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = false, of = {"message", "errorCode", "userLogin", "url"})
 @Entity
 @Table(name = "error_messages")
 public class ErrorMessageEntity {

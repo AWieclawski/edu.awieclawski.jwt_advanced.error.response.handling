@@ -1,11 +1,13 @@
 package edu.awieclawski.app.jwt.inn;
 
 import edu.awieclawski.app.dto.UserResponseDTO;
-import edu.awieclawski.app.jwt.dto.JwtUserDTO;
+import edu.awieclawski.app.exception.UpdateEntityException;
 import edu.awieclawski.app.jwt.IJwtPublicAuthenticationService;
 import edu.awieclawski.app.jwt.dto.JwtRequest;
 import edu.awieclawski.app.jwt.dto.JwtResponse;
+import edu.awieclawski.app.jwt.dto.JwtUserDTO;
 import edu.awieclawski.app.jwt.exception.JwtAuthenticationException;
+import edu.awieclawski.app.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.DependsOn;
@@ -51,14 +53,15 @@ public class JwtPublicAuthenticationService implements IJwtPublicAuthenticationS
     }
 
     public JwtResponse createAuthenticationToken(JwtRequest jwtRequest) throws Exception {
-        authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsername());
+        authenticate(jwtRequest.getLogin(), jwtRequest.getPassword());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getLogin());
         JwtResponse jwtResponse = jwtTokenUtil.generateToken(userDetails, false);
         log.info("New Jwt token [{}] created for: [{}]", jwtTokenUtil.getTokenShort(jwtResponse.getJwtToken()), userDetails.getUsername());
         return jwtResponse;
     }
 
-    public JwtResponse refreshToken(Authentication authentication) {
+    public JwtResponse refreshToken() {
+        Authentication authentication = getAuthentication();
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
         JwtResponse jwtResponse = jwtTokenUtil.generateToken(userDetails, true);
         log.info("Jwt token [{}] refreshed for: [{}]", jwtTokenUtil.getTokenShort(jwtResponse.getJwtToken()), userDetails.getUsername());
@@ -75,7 +78,19 @@ public class JwtPublicAuthenticationService implements IJwtPublicAuthenticationS
         }
     }
 
+    @Override
+    public UserResponseDTO updateUser(JwtUserDTO user) {
+        Authentication authentication = getAuthentication();
+        final UserDetails authenticatedUser = userDetailsService.loadUserByUsername(authentication.getName());
+        boolean hasAdminRole = authenticatedUser.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals(UserRole.SUPER.getRole()));
+        if (hasAdminRole) {
+            return userDetailsService.updateEncodedUser(user);
+        }
+        throw new UpdateEntityException("Authorised User " + authenticatedUser.getUsername() + " is not allowed to update. " + user.getLogin());
+    }
+
     public UserResponseDTO saveUser(JwtUserDTO jwtUserDTO) {
-        return userDetailsService.saveSecretUser(jwtUserDTO);
+        return userDetailsService.saveEncodedUser(jwtUserDTO);
     }
 }

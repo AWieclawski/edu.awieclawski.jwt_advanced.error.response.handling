@@ -9,7 +9,7 @@ spring:
     name: jwt-app
   main:
     banner-mode: off
-  #spring database
+#spring database for test profile
   h2:
     console:
       enabled: true
@@ -28,6 +28,10 @@ logging:
     root: INFO
     org.springframework.web: INFO
     edu.awieclawski.app: DEBUG
+# super user config
+super-user:
+  login: ${SUPER_USER_NAME:superUserName}
+  pass: ${SUPER_USER_PASS:superUserPass}
 #application variables
 application:
   timezone: ${APP_TIME_ZONE:GMT+2:00}
@@ -38,10 +42,11 @@ jwt:
   api:
     open:
       hello: /hello
-      login: /api/authenticate
-      register: /api/register
+      login: /authenticate
+      register: /register
     safe:
-      user: /api/safe/user
-      admin: /api/safe/admin
-      refresh-token: /api/safe/refreshtoken
-      errors: /api/safe/errors
+      user: /user
+      admin: /admin
+      refresh-token: /refreshtoken
+      user-update: /user/update
+      errors: /errors

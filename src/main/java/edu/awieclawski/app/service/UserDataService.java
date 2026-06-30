@@ -2,8 +2,8 @@ package edu.awieclawski.app.service;
 
 import edu.awieclawski.app.dao.UserRepository;
 import edu.awieclawski.app.dto.UserResponseDTO;
-import edu.awieclawski.app.jwt.dto.JwtUserDTO;
 import edu.awieclawski.app.exception.SaveEntityException;
+import edu.awieclawski.app.jwt.dto.JwtUserDTO;
 import edu.awieclawski.app.mapper.UserMapper;
 import edu.awieclawski.app.model.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +33,11 @@ public class UserDataService {
 
     public UserEntity getUserByLogin(String username) {
         return userRepository.findByLogin(username);
+    }
+
+    public UserEntity updateUser(UserEntity user) {
+        user = userRepository.save(user);
+        log.info("User [{}|{}] updated", user.getLogin(), user.getRoleId());
+        return user;
     }
 }

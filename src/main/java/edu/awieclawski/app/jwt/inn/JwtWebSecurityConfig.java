@@ -1,5 +1,9 @@
 package edu.awieclawski.app.jwt.inn;
 
+import edu.awieclawski.app.controller.SecuredResourceController;
+import edu.awieclawski.app.jwt.JwtPublicAuthenticationController;
+import edu.awieclawski.app.jwt.JwtSecuredAuthenticationController;
+import edu.awieclawski.app.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Arrays;
 
 /**
  * https://www.baeldung.com/spring-security-custom-access-denied-page
@@ -59,6 +65,9 @@ class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${jwt.api.safe.errors}")
     private String jwtApiErrors;
 
+    @Value("${jwt.api.safe.user-update}")
+    private String jwtApiUserUpdate;
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -75,12 +84,21 @@ class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+        jwtApiHello = JwtPublicAuthenticationController.API_PATH + jwtApiHello;
+        jwtApiLogIn = JwtPublicAuthenticationController.API_PATH + jwtApiLogIn;
+        jwtApiRegister = JwtPublicAuthenticationController.API_PATH + jwtApiRegister;
+        // secured
+        jwtApiRefreshToken = JwtSecuredAuthenticationController.API_PATH + jwtApiRefreshToken;
+        jwtApiUserUpdate = JwtSecuredAuthenticationController.API_PATH + jwtApiUserUpdate;
+        jwtApiErrors = SecuredResourceController.API_PATH + jwtApiErrors;
+        jwtApiUser = SecuredResourceController.API_PATH + jwtApiUser;
+        jwtApiAdmin = SecuredResourceController.API_PATH + jwtApiAdmin;
         // We don't need CSRF for this example
         httpSecurity.csrf().disable()
                 .authorizeRequests()
                 // requests need to be authenticated
-                .antMatchers(jwtApiAdmin + EXT_WILD_CARD, jwtApiErrors).hasRole("ADMIN")
-                .antMatchers(jwtApiUser + EXT_WILD_CARD, jwtApiRefreshToken).hasAnyRole("USER", "ADMIN")
+                .antMatchers(jwtApiAdmin + EXT_WILD_CARD, jwtApiUserUpdate, jwtApiErrors).hasRole(UserRole.SUPER.getRoleName())
+                .antMatchers(jwtApiUser + EXT_WILD_CARD, jwtApiRefreshToken).hasAnyRole(UserRole.BASIC.getRoleName(), UserRole.SUPER.getRoleName())
                 // dont authenticate this particular request
                 .antMatchers(jwtApiLogIn, jwtApiRegister, jwtApiHello).permitAll().anyRequest().authenticated();
 
@@ -96,6 +114,8 @@ class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Add a filter to validate the tokens with every request
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        log.info("Not secured paths: {}", Arrays.asList(jwtApiLogIn, jwtApiRegister, jwtApiHello));
     }
 
 }

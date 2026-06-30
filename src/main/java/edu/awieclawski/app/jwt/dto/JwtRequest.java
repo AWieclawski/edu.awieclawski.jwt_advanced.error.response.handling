@@ -12,6 +12,6 @@ public class JwtRequest implements Serializable {
 
     private static final long serialVersionUID = 5432468583005156531L;
 
-    private String username;
+    private String login;
     private String password;
 }

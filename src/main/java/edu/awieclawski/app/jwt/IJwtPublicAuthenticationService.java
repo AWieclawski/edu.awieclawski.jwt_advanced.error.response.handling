@@ -12,7 +12,9 @@ public interface IJwtPublicAuthenticationService {
 
     JwtResponse createAuthenticationToken(JwtRequest jwtRequest) throws Exception;
 
-    JwtResponse refreshToken(Authentication authentication);
+    JwtResponse refreshToken();
 
     UserResponseDTO saveUser(JwtUserDTO jwtUserDTO);
+
+    UserResponseDTO updateUser(JwtUserDTO user);
 }

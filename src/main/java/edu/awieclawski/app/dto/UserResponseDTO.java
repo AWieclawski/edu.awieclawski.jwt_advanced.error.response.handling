@@ -13,5 +13,5 @@ public class UserResponseDTO {
     private String login;
     private String name;
     private String email;
-    private String role;
+    private Integer roleId;
 }

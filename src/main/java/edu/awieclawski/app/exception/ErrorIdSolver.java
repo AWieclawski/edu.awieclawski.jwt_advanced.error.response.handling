@@ -1,6 +1,6 @@
 package edu.awieclawski.app.exception;
 
-import edu.awieclawski.app.exception.base.BaseRestApiException;
+import edu.awieclawski.app.exception.base.AuthorisedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +11,8 @@ public class ErrorIdSolver {
 
     public static UUID solve(Exception exception) {
         UUID uuid = UUID.randomUUID();
-        if (exception instanceof BaseRestApiException && ((BaseRestApiException) exception).getErrorId() != null) {
-            uuid = ((BaseRestApiException) exception).getErrorId();
+        if (exception instanceof AuthorisedException && ((AuthorisedException) exception).getErrorId() != null) {
+            uuid = ((AuthorisedException) exception).getErrorId();
         }
         return uuid;
     }

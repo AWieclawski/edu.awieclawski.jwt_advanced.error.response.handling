@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor //(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(exclude = {"password"})
 @Entity
 @Table(name = "users")
@@ -29,8 +29,8 @@ public class UserEntity {
     @Column
     private String name;
 
-    @Column
-    private String role;
+    @Column(name = "ROLE_ID")
+    private Integer roleId;
 
     @Column(unique = true, nullable = false)
     @JsonIgnore
