@@ -5,9 +5,10 @@ import edu.awieclawski.app.dto.UserResponseDTO;
 import edu.awieclawski.app.jwt.dto.JwtUserDTO;
 import edu.awieclawski.app.mapper.UserMapper;
 import edu.awieclawski.app.model.UserEntity;
-import edu.awieclawski.app.model.UserRole;
 import edu.awieclawski.app.service.UserDataService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +16,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service(value = JwtUserDetailsService.BEAN_NAME)
 @RequiredArgsConstructor
 @DependsOn({UserDataService.BEAN_NAME, JwtPasswordEncoder.BEAN_NAME})
@@ -34,15 +35,10 @@ class JwtUserDetailsService implements UserDetailsService {
     }
 
     UserResponseDTO updateEncodedUser(JwtUserDTO jwtUserDTO) {
-        UserEntity user = userService.getUserByLogin(jwtUserDTO.getLogin());
-        if (user == null) {
-            throw new UsernameNotFoundException("User to update not found with login: " + jwtUserDTO.getLogin());
-        }
         if (jwtUserDTO.getPassword() != null) {
             jwtUserDTO.setPassword(passwordEncoder.getEncoder().encode(jwtUserDTO.getPassword()));
         }
-        UserMapper.updateEntity(jwtUserDTO, user);
-        return UserMapper.toDto(userService.updateUser(user));
+        return UserMapper.toDto(userService.updateUser(jwtUserDTO));
     }
 
     @Override
@@ -51,9 +47,10 @@ class JwtUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User not found with login: " + login);
         }
-        String roleNameById = UserRole.SUPER.getRoleById(user.getRoleId());
-        List<SimpleGrantedAuthority> roles = Arrays.asList(new SimpleGrantedAuthority(roleNameById));
-
+        var roles = user.getRoles().stream()
+                .map(it -> new SimpleGrantedAuthority(it.getUserRole().getRole()))
+                .collect(Collectors.toSet());
+        log.debug("Got {} roles for user: {}", roles, login);
         return new org.springframework.security.core.userdetails.User(
                 user.getLogin(),
                 user.getPassword(),

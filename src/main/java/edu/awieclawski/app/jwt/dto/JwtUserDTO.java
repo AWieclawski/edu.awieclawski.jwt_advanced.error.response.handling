@@ -3,6 +3,8 @@ package edu.awieclawski.app.jwt.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -16,5 +18,5 @@ public class JwtUserDTO {
     private String password;
     private String email;
     @Setter
-    private Integer roleId;
+    List<Integer> roles;
 }

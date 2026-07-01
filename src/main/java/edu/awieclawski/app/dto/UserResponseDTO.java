@@ -3,6 +3,8 @@ package edu.awieclawski.app.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -13,5 +15,5 @@ public class UserResponseDTO {
     private String login;
     private String name;
     private String email;
-    private Integer roleId;
+    private Set<Integer> roles;
 }

@@ -30,8 +30,9 @@ logging:
     edu.awieclawski.app: DEBUG
 # super user config
 super-user:
-  login: ${SUPER_USER_NAME:superUserName}
+  login: ${SUPER_USER_LOGIN:superUserLogin}
   pass: ${SUPER_USER_PASS:superUserPass}
+  name: ${SUPER_USER_NAME:superUserName}
 #application variables
 application:
   timezone: ${APP_TIME_ZONE:GMT+2:00}

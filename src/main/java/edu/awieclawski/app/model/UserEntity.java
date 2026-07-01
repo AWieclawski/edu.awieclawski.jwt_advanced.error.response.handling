@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -18,7 +19,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "LOGIN", unique = true, nullable = false)
     private String login;
@@ -29,15 +30,19 @@ public class UserEntity {
     @Column
     private String name;
 
-    @Column(name = "ROLE_ID")
-    private Integer roleId;
-
     @Column(unique = true, nullable = false)
     @JsonIgnore
     private String password;
 
     @Column(name = "CREATED_AT")
     private Timestamp createdAt;
+
+    // https://www.baeldung.com/hibernate-detached-entity-passed-to-persist
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<RoleEntity> roles;
 
     @PrePersist
     public void prePersist() {

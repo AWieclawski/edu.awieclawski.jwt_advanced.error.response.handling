@@ -6,17 +6,21 @@ import javax.persistence.*;
 
 @Setter
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor (access = AccessLevel.PRIVATE)
+@ToString
 @Entity
 @Table(name = "roles")
 public class RoleEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
-    @Column(name = "ROLE_ID")
+    @Column(name = "ROLE_NAME")
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    public RoleEntity(UserRole userRole) {
+        this.userRole = userRole;
+        this.id = this.userRole.getRoleId();
+    }
 }

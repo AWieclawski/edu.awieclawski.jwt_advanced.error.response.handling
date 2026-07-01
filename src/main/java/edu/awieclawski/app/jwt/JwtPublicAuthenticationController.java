@@ -1,12 +1,15 @@
 package edu.awieclawski.app.jwt;
 
-import edu.awieclawski.app.jwt.dto.JwtUserDTO;
 import edu.awieclawski.app.jwt.dto.JwtRequest;
+import edu.awieclawski.app.jwt.dto.JwtUserDTO;
 import edu.awieclawski.app.jwt.inn.JwtPublicAuthenticationService;
+import edu.awieclawski.app.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,12 +30,12 @@ public class JwtPublicAuthenticationController {
     }
 
     @RequestMapping(value = "${jwt.api.open.register}", method = RequestMethod.POST)
-    public ResponseEntity<Object> createBasicUser(@RequestBody JwtUserDTO user) {
+    public ResponseEntity<Object> createBasicUser(@RequestBody JwtUserDTO jwtUserDTO) {
         // user role set by not secured end point must be default
-        user.setRoleId(null);
+        jwtUserDTO.setRoles(Collections.singletonList(UserRole.BASIC.getRoleId()));
         return ResponseEntity.ok()
                 .body(jwtPublicAuthenticationService
-                        .saveUser(user));
+                        .saveUser(jwtUserDTO));
     }
 
 }

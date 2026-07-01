@@ -1,13 +1,15 @@
 package edu.awieclawski.app.model;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Arrays;
 
+@ToString
 public enum UserRole {
-    BASIC("ROLE_USER", "USER", 1),
-    MANAGE("ROLE_MANAGE", "MANAGE", 2),
-    SUPER("ROLE_ADMIN", "ADMIN", 3);
+    BASIC("USER", 1),
+    MANAGER("MANAGER", 9),
+    SUPER("ADMIN", 99);
 
     @Getter
     private final String role;
@@ -16,18 +18,33 @@ public enum UserRole {
     @Getter
     private final Integer roleId;
 
-    UserRole(String role, String roleName, Integer roleId) {
-        this.role = role;
+    UserRole(String roleName, Integer roleId) {
+        this.role = "ROLE_" + roleName;
         this.roleName = roleName;
         this.roleId = roleId;
     }
 
-    public String getRoleById(Integer roleId) {
+    public static String getRoleById(Integer roleId) {
         return Arrays.stream(values())
                 .filter(role -> role.roleId.equals(roleId))
                 .findFirst()
                 .map(el -> el.role)
                 .orElse(null);
+
+    }
+
+    public static UserRole getUserRoleById(Integer roleId) {
+        return Arrays.stream(values())
+                .filter(role -> role.roleId.equals(roleId))
+                .findFirst()
+                .orElse(null);
+
+    }
+
+    public static String getRoleNameById(Integer roleId) {
+        return getUserRoleById(roleId) != null
+                ? getUserRoleById(roleId).getRoleName()
+                : null;
 
     }
 }
